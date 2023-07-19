@@ -30,13 +30,12 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // ----------------------------------------------------------------------
-
 const TABLE_HEAD = [
   { id: 'paymentId', label: 'ID', alignRight: false },
+  { id: 'fullname', label: 'Full Name', alignRight: false },
   { id: 'paymentCode', label: 'Code', alignRight: false },
   { id: 'balance', label: 'Balance', alignRight: false },
   { id: 'paymentDate', label: 'Date', alignRight: false },
-  { id: 'userId', label: 'Name', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
   { id: '' },
 ];
@@ -67,7 +66,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.paymentId.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -83,7 +82,7 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('paymentId');
 
   const [filterName, setFilterName] = useState('');
 
@@ -101,7 +100,7 @@ export default function UserPage() {
     try {
       const url = 'https://i-clean-api.herokuapp.com/api/v1/payment';
       const { data } = (await axios.get(url));
-      setTableData(data);
+      setTableData(data.data);
     } catch (err) {
       console.log(err);
     }
@@ -119,7 +118,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = tableData.map((n) => n.userId);
+      const newSelecteds = tableData.map((n) => n.paymentId);
       setSelected(newSelecteds);
       return;
     }
@@ -164,17 +163,14 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> User | iClean Admin </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Payment History
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
-          </Button>
         </Stack>
 
         <Card>
@@ -194,33 +190,35 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                    const { paymentId, paymentCode, balance, paymentDate, userId, imgLink, fullname, email } = row;
+                    const selectedUser = selected.indexOf(paymentId) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={paymentId} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, paymentId)} />
                         </TableCell>
+
+                        <TableCell align="left">{paymentId}</TableCell>
+
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            <Avatar alt={fullname} src={imgLink} />
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {fullname}
                             </Typography>
                           </Stack>
                         </TableCell>
+                        <TableCell align="left">{paymentCode}</TableCell>
 
-                        <TableCell align="left">{company}</TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-                        <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
-                        </TableCell>
+                        <TableCell align="left">{balance}</TableCell>
+                        <TableCell align="left">{new Date(paymentDate).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
