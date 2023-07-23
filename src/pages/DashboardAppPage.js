@@ -49,11 +49,11 @@ export default function DashboardAppPage() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
-            <AppWidgetSummary title="Weekly Sales" total={70} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Weekly Sales" total={5410000} icon={'ant-design:windows-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>
-            <AppWidgetSummary title="New Users" total={21} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="New Users" total={28} color="info" icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>

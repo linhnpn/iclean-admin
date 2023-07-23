@@ -166,7 +166,7 @@ export default function UserListPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Payment History
+            User List
           </Typography>
         </Stack>
 
