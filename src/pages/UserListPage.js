@@ -28,13 +28,12 @@ import Scrollbar from '../components/scrollbar';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // ----------------------------------------------------------------------
 const TABLE_HEAD = [
-  { id: 'paymentId', label: 'ID', alignRight: false },
+  { id: 'userId', label: 'ID', alignRight: false },
   { id: 'fullname', label: 'Full Name', alignRight: false },
-  { id: 'paymentCode', label: 'Code', alignRight: false },
-  { id: 'balance', label: 'Balance', alignRight: false },
-  { id: 'paymentDate', label: 'Date', alignRight: false },
+  { id: 'gender', label: 'Gender', alignRight: false },
   { id: 'phone', label: 'Phone', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false },
+  { id: 'roleName', label: 'Role', alignRight: false },
   { id: '' },
 ];
 
@@ -69,7 +68,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function UserListPage() {
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -91,12 +90,12 @@ export default function UserPage() {
   };
 
   useEffect(() => {
-    getPayment();
+    getUsers();
   }, []);
 
-  const getPayment = async () => {
+  const getUsers = async () => {
     try {
-      const url = 'https://i-clean-api.herokuapp.com/api/v1/payment';
+      const url = 'https://i-clean-api.herokuapp.com/api/v1/user';
       const { data } = (await axios.get(url));
       setTableData(data.data);
     } catch (err) {
@@ -116,7 +115,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = tableData.map((n) => n.paymentId);
+      const newSelecteds = tableData.map((n) => n.userId);
       setSelected(newSelecteds);
       return;
     }
@@ -188,36 +187,31 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { paymentId, paymentCode, balance, paymentDate, imgLink, fullname, email, phone } = row;
-                    const selectedUser = selected.indexOf(paymentId) !== -1;
+                    const { userId, fullname, gender, phone, email, profilePicture, roleName } = row;
+                    const selectedUser = selected.indexOf(userId) !== -1;
 
                     return (
-                      <TableRow hover key={paymentId} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={userId} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, paymentId)} />
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, userId)} />
                         </TableCell>
 
-                        <TableCell align="left">{paymentId}</TableCell>
+                        <TableCell align="left">{userId}</TableCell>
 
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={fullname} src={imgLink} />
+                            <Avatar alt={fullname} src={profilePicture} />
                             <Typography variant="subtitle2" noWrap>
                               {fullname}
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{paymentCode}</TableCell>
+                        <TableCell align="left">{gender}</TableCell>
 
-                        <TableCell align="left">{balance}</TableCell>
-                        <TableCell align="left">{new Date(paymentDate).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}</TableCell>
                         <TableCell align="left">{phone}</TableCell>
                         <TableCell align="left">{email}</TableCell>
+                        <TableCell align="left">{roleName}</TableCell>
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
